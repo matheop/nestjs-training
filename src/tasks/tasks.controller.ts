@@ -4,6 +4,7 @@ import {
 	Delete,
 	Get,
 	Param,
+	ParseIntPipe,
 	Patch,
 	Post,
 	Query,
@@ -13,40 +14,42 @@ import {
 import { CreateTaskDto } from './dto/create-task.dto';
 import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
 import { TaskStatusValidationPipe } from './pipes/update-status-validation.pipe';
+import { TaskStatus } from './task-status.enum';
+import { Task } from './task.entity';
 import { TasksService } from './tasks.service';
 
 @Controller('tasks')
 export class TasksController {
 	constructor(private tasksService: TasksService) {}
 
-	// @Get()
-	// getTasks(@Query(ValidationPipe) filterDto: GetTasksFilterDto): Task[] {
-	// 	return Object.keys(filterDto).length
-	// 		? this.tasksService.getFilteredTasks(filterDto)
-	// 		: this.tasksService.getAllTasks();
-	// }
+	@Get()
+	getTasks(
+		@Query(ValidationPipe) filterDto: GetTasksFilterDto,
+	): Promise<Task[]> {
+		return this.tasksService.getAllTasks(filterDto);
+	}
 
-	// @Get('/:id')
-	// getTaskById(@Param('id') id: string): Task {
-	// 	return this.tasksService.getTaskById(id);
-	// }
+	@Get('/:id')
+	getTaskById(@Param('id', ParseIntPipe) id: number): Promise<Task> {
+		return this.tasksService.getTaskById(id);
+	}
 
-	// @Post()
-	// @UsePipes(ValidationPipe)
-	// createTask(@Body() createTaskDto: CreateTaskDto): Task {
-	// 	return this.tasksService.createTask(createTaskDto);
-	// }
+	@Post()
+	@UsePipes(ValidationPipe)
+	createTask(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
+		return this.tasksService.createTask(createTaskDto);
+	}
 
-	// @Delete('/:id')
-	// deleteTask(@Param('id') id: string): Task {
-	// 	return this.tasksService.deleteTask(id);
-	// }
+	@Delete('/:id')
+	deleteTask(@Param('id', ParseIntPipe) id: number): Promise<void> {
+		return this.tasksService.deleteTask(id);
+	}
 
-	// @Patch('/:id/status')
-	// updateStatusTask(
-	// 	@Param('id') id: string,
-	// 	@Body('status', TaskStatusValidationPipe) status: TaskStatus,
-	// ) {
-	// 	return this.tasksService.updateStatusTask(id, status);
-	// }
+	@Patch('/:id/status')
+	updateStatusTask(
+		@Param('id', ParseIntPipe) id: number,
+		@Body('status', TaskStatusValidationPipe) status: TaskStatus,
+	): Promise<Task> {
+		return this.tasksService.updateStatusTask(id, status);
+	}
 }
