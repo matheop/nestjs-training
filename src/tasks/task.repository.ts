@@ -8,15 +8,18 @@ import { Task } from './task.entity';
 export class TaskRepository extends Repository<Task> {
 	async getTasks(filterDto: GetTasksFilterDto): Promise<Task[]> {
 		const { status, search } = filterDto;
+		// cQB => class allowing us to build easy SQL queries
+		// param : table in DB
 		const query = this.createQueryBuilder('task');
 
+		// andWhere => allows us to specify several WHERE conditions
 		if (status) query.andWhere('task.status = :status', { status });
 		if (search)
 			query.andWhere(
 				'(task.title LIKE :search OR task.description LIKE :search)',
 				{ search: `%${search}%` },
 			);
-
+		// getMany => returns tasks matching previous conditions
 		const tasks = await query.getMany();
 		return tasks;
 	}

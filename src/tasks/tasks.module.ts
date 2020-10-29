@@ -5,6 +5,7 @@ import { TaskRepository } from './task.repository';
 import { TasksService } from './tasks.service';
 
 @Module({
+	// forFeature => define which repositories are registered in the current scope
 	imports: [TypeOrmModule.forFeature([TaskRepository])],
 	controllers: [TasksController],
 	providers: [TasksService],
